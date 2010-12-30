@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'optparse'
+require 'httparty'
+require 'builder'
+
+tracker_token = "52e468cfc0a87795f8f2230d6c8a42cb"
+project_id = "165981"
+
+options = {}
+option_parser = OptionParser.new do |opts|
+  opts.on("-t", "--token TOKEN",
+          "Use the Pivotal Tracker API token TOKEN") do |token|
+    options[:token] = token
+  end
+
+  opts.on("-p", "--project_id ID",
+          "Add stories to the project identified by ID") do |project_id|
+    options[:project_id] = project_id
+  end
+
+  opts.banner = "Usage: kivot [options] NAME [DESCRIPTION]"
+end
+option_parser.parse!
+
+name = ARGV[0]
+description = ARGV[1]
+
+unless name
+  puts option_parser.banner
+  exit(1)
+end
+
+story_builder = Builder::XmlMarkup.new
+story_xml = story_builder.story do |s|
+  s.story_type 'feature'
+  s.name name
+  s.description description
+end
+
+HTTParty.post("http://www.pivotaltracker.com/services/v3/projects/#{options[:project_id]}/stories", :headers => {"X-TrackerToken" => options[:token], "Content-Type" => "text/xml"}, :body => story_xml)

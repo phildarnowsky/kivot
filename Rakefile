@@ -19,6 +19,9 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Add a story to Pivotal and never take your hands off the keyboard.}
   gem.email = "phil@darnowsky.com"
   gem.authors = ["Phil Darnowsky"]
+
+  gem.executables << 'kivot'
+
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
