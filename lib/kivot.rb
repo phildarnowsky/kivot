@@ -1,4 +1,1 @@
-module Kivot
-  class PivotalPoster
-  end
-end
+require 'kivot/pivotal_poster'
