@@ -2,11 +2,8 @@
 
 require 'rubygems'
 require 'optparse'
-require 'httparty'
-require 'builder'
 
-tracker_token = "52e468cfc0a87795f8f2230d6c8a42cb"
-project_id = "165981"
+require "kivot/pivotal_poster"
 
 options = {}
 option_parser = OptionParser.new do |opts|
@@ -32,11 +29,9 @@ unless name
   exit(1)
 end
 
-story_builder = Builder::XmlMarkup.new
-story_xml = story_builder.story do |s|
-  s.story_type 'feature'
-  s.name name
-  s.description description
-end
+poster_options = {
+  :description => description
+}
 
-HTTParty.post("http://www.pivotaltracker.com/services/v3/projects/#{options[:project_id]}/stories", :headers => {"X-TrackerToken" => options[:token], "Content-Type" => "text/xml"}, :body => story_xml)
+poster = Kivot::PivotalPoster.new(options[:token], options[:project_id])
+poster.post_story(name, poster_options)
