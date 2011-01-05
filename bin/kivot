@@ -5,6 +5,38 @@ require 'optparse'
 
 require "kivot/pivotal_poster"
 
+def find_file_in_home(filename)
+  home_directory = Pathname(File.expand_path('~'))
+  hypothetical_path = home_directory.join(filename)
+  if hypothetical_path.file?
+    hypothetical_path
+  else
+    nil
+  end
+end
+
+def find_file_recursively_or_in_home(filename, current_path)
+  hypothetical_path = current_path.join(filename)
+  if hypothetical_path.file?
+    return hypothetical_path
+  else
+    if current_path.root?
+      return find_file_in_home(filename)
+    else
+      return find_file_recursively_or_in_home(filename, current_path.parent)
+    end
+  end
+end
+
+def read_token_from_config_file
+  current_path = Pathname.getwd
+  token_path = find_file_recursively_or_in_home('.kivot_token', current_path)
+
+  if token_path
+    File.read(token_path).strip
+  end
+end
+
 options = {}
 option_parser = OptionParser.new do |opts|
   opts.on("-t", "--token TOKEN",
@@ -17,14 +49,23 @@ option_parser = OptionParser.new do |opts|
     options[:project_id] = project_id
   end
 
-  opts.banner = "Usage: kivot [options] NAME [DESCRIPTION]"
+  opts.banner =<<-END_OF_BANNER
+Usage: kivot [options] NAME [DESCRIPTION]
+  You must specify your Pivotal Tracker API token and project ID, using either 
+  the -t and -p options, or the .kivot_token and .kivot_project_id files.
+
+  kivot will look for those files in the current directory, then parent 
+  directories, then your home directory.
+  END_OF_BANNER
 end
 option_parser.parse!
 
 name = ARGV[0]
 description = ARGV[1]
 
-unless name
+options[:token] ||= read_token_from_config_file
+
+unless name && options[:token]
   puts option_parser.banner
   exit(1)
 end
