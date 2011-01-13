@@ -5,36 +5,8 @@ require 'optparse'
 
 require "kivot/pivotal_poster"
 
-def find_file_in_home(filename)
-  home_directory = Pathname(File.expand_path('~'))
-  hypothetical_path = home_directory.join(filename)
-  if hypothetical_path.file?
-    hypothetical_path
-  else
-    nil
-  end
-end
-
-def find_file_recursively_or_in_home(filename, current_path)
-  hypothetical_path = current_path.join(filename)
-  if hypothetical_path.file?
-    return hypothetical_path
-  else
-    if current_path.root?
-      return find_file_in_home(filename)
-    else
-      return find_file_recursively_or_in_home(filename, current_path.parent)
-    end
-  end
-end
-
-def read_token_from_config_file
-  current_path = Pathname.getwd
-  token_path = find_file_recursively_or_in_home('.kivot_token', current_path)
-
-  if token_path
-    File.read(token_path).strip
-  end
+def read_from_config_file(filename)
+  Kivot::ConfigFileReader.read_from_config_file(filename, Pathname.getwd)
 end
 
 options = {}
@@ -63,9 +35,10 @@ option_parser.parse!
 name = ARGV[0]
 description = ARGV[1]
 
-options[:token] ||= read_token_from_config_file
+options[:token] ||= read_from_config_file('.kivot_token')
+options[:project_id] ||= read_from_config_file('.kivot_project_id')
 
-unless name && options[:token]
+unless name && options[:token] && options[:project_id]
   puts option_parser.banner
   exit(1)
 end
