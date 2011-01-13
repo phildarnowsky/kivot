@@ -4,6 +4,7 @@ require 'rubygems'
 require 'optparse'
 
 require "kivot/pivotal_poster"
+require 'kivot/config_file_reader'
 
 def read_from_config_file(filename)
   Kivot::ConfigFileReader.read_from_config_file(filename, Pathname.getwd)
