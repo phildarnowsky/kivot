@@ -1,24 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-SCRIPT_PATH = File.expand_path(File.dirname(__FILE__) + '/../bin/kivot')
 
 describe "kivot script" do
-  def set_argv(new_argv)
-    original_verbose = $VERBOSE
-    $VERBOSE = nil
-    Object.const_set(:ARGV, new_argv)
-    $VERBOSE = original_verbose
-  end
-
-  def make_mock_poster
-    mock_poster = mock(:post_story => nil)
-    Kivot::PivotalPoster.stub!(:new).and_return(mock_poster)
-
-    mock_poster
-  end
-
-  def run_script
-    load SCRIPT_PATH
-  end
+  include OptionalArgumentMacros
 
   before(:each) do
     @original_argv = ARGV.dup
@@ -136,17 +119,11 @@ describe "kivot script" do
     end
   end
 
-  context "when the owner argument is present" do
-    it "should honor the owner argument" do
-      owner_name = "Frank Booth"
-      set_argv(["-t", @fake_token, "-p", @fake_project_id, "-o", owner_name, @fake_name])
+  should_honor_argument('-o', :owner)
+  should_honor_argument('--owner', :owner)
 
-      mock_poster = make_mock_poster
-      mock_poster.should_receive(:post_story).with(anything, hash_including(:owner => owner_name))
-
-      run_script
-    end
-  end
+  should_honor_argument('-r', :requester)
+  should_honor_argument('--requester', :requester)
 
   context "with valid arguments" do
     it "should attempt to post the story" do

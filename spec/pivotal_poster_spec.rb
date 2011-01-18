@@ -47,6 +47,6 @@ describe "PivotalPoster" do
     end
 
     should_post_option(:owner, 'owned_by')
-
+    should_post_option(:requester, 'requested_by')
   end
 end

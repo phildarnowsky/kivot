@@ -27,6 +27,11 @@ option_parser = OptionParser.new do |opts|
     options[:owner] = owner_name
   end
 
+  opts.on("-r", "--requester REQUESTER_NAME",
+          "Set the requester of the new story to REQUESTER_NAME") do |requester_name|
+    options[:requester] = requester_name
+  end
+
   opts.banner =<<-END_OF_BANNER
 Usage: kivot [options] NAME [DESCRIPTION]
   You must specify your Pivotal Tracker API token and project ID, using either 

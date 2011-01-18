@@ -19,6 +19,7 @@ module Kivot
 
         s.description(args[:description]) if args[:description]
         s.owned_by(args[:owner]) if args[:owner]
+        s.requested_by(args[:requester]) if args[:requester]
       end
 
       HTTParty.post(story_path, :headers => headers, :body => body)
