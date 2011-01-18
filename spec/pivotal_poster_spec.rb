@@ -16,7 +16,6 @@ describe "PivotalPoster" do
       HTTParty.stub!(:post)
 
       @story_name = "do a new thing"
-      @story_description = "I do a new thing now: to do things"
     end
 
     it "should post to the correct URL" do
@@ -41,8 +40,17 @@ describe "PivotalPoster" do
 
     context "when a description is passed" do
       it "should include the description in the body" do
-        expect_body_element('/story/description', @story_description)
-        @poster.post_story(@story_name, :description => @story_description)
+        story_description = "I do a new thing now: to do things"
+        expect_body_element('/story/description', story_description)
+        @poster.post_story(@story_name, :description => story_description)
+      end
+    end
+
+    context "when an owner is passed" do
+      it "should include the owner in the body" do
+        owner = "Frank Booth"
+        expect_body_element('/story/owned_by', owner)
+        @poster.post_story(@story_name, :owner => owner)
       end
     end
   end

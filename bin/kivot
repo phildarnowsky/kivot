@@ -22,6 +22,11 @@ option_parser = OptionParser.new do |opts|
     options[:project_id] = project_id
   end
 
+  opts.on("-o", "--owner OWNER_NAME",
+          "Set the owner of the new story to OWNER_NAME") do |owner_name|
+    options[:owner] = owner_name
+  end
+
   opts.banner =<<-END_OF_BANNER
 Usage: kivot [options] NAME [DESCRIPTION]
   You must specify your Pivotal Tracker API token and project ID, using either 
@@ -36,17 +41,17 @@ option_parser.parse!
 name = ARGV[0]
 description = ARGV[1]
 
-options[:token] ||= read_from_config_file('.kivot_token')
-options[:project_id] ||= read_from_config_file('.kivot_project_id')
+token = options.delete(:token) || read_from_config_file('.kivot_token')
+project_id = options.delete(:project_id) || read_from_config_file('.kivot_project_id')
 
-unless name && options[:token] && options[:project_id]
+unless name && token && project_id
   puts option_parser.banner
   exit(1)
 end
 
 poster_options = {
   :description => description
-}
+}.merge(options)
 
-poster = Kivot::PivotalPoster.new(options[:token], options[:project_id])
+poster = Kivot::PivotalPoster.new(token, project_id)
 poster.post_story(name, poster_options)

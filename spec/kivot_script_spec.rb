@@ -136,6 +136,18 @@ describe "kivot script" do
     end
   end
 
+  context "when the owner argument is present" do
+    it "should honor the owner argument" do
+      owner_name = "Frank Booth"
+      set_argv(["-t", @fake_token, "-p", @fake_project_id, "-o", owner_name, @fake_name])
+
+      mock_poster = make_mock_poster
+      mock_poster.should_receive(:post_story).with(anything, hash_including(:owner => owner_name))
+
+      run_script
+    end
+  end
+
   context "with valid arguments" do
     it "should attempt to post the story" do
       set_argv(@fake_args)
