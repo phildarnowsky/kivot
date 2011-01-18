@@ -46,12 +46,7 @@ describe "PivotalPoster" do
       end
     end
 
-    context "when an owner is passed" do
-      it "should include the owner in the body" do
-        owner = "Frank Booth"
-        expect_body_element('/story/owned_by', owner)
-        @poster.post_story(@story_name, :owner => owner)
-      end
-    end
+    should_post_option(:owner, 'owned_by')
+
   end
 end
